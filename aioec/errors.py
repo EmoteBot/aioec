@@ -126,4 +126,4 @@ class UnsupportedMediaType(HttpException):
 	Subclass of :exc:`HttpException`
 	"""
 	def __init__(self, response):
-		super().__init__('The emote image passed is not a JPEG, GIF, or PNG.')
+		super().__init__(response, 'The emote image passed is not a JPEG, GIF, or PNG.')

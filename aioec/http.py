@@ -62,6 +62,14 @@ class HttpClient:
 	def close(self):
 		return self._session.close()
 
+	_response_errors = {
+		401: lambda response, data: LoginFailure,
+		403: Forbidden,
+		404: NotFound,
+		409: lambda response, data: EmoteExists(response, data['name']),  # HTTP Conflict
+		413: lambda response, data: RequestEntityTooLarge(response, data.get('max_size'), data.get('actual_size')),
+		415: lambda response, data: UnsupportedMediaType(response)}
+
 	async def request(self, route, **kwargs):
 		method = route.method
 		url = route.url
@@ -70,21 +78,7 @@ class HttpClient:
 			data = await json_or_text(response)
 			if response.status in range(200, 300):
 				return data
-
-			if response.status == 401:
-				raise LoginFailure
-			elif response.status == 403:
-				raise Forbidden(response, data)
-			elif response.status == 404:
-				raise NotFound(response, data)
-			elif response.status == 409:  # Conflict
-				raise EmoteExists(response, data['name'])
-			elif response.status == 413:
-				raise RequestEntityTooLarge(response, data.get('max_size'), data.get('actual_size'))
-			elif response.status == 415:
-				raise UnsupportedMediaType
-			else:
-				raise HttpException(response, data)
+			raise self._response_errors.get(response.status, HttpException)(response, data)
 
 	def emotes(self, author_id=None):
 		if author_id is not None:

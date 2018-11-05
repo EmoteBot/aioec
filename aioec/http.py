@@ -86,11 +86,10 @@ class HttpClient:
 			else:
 				raise HttpException(response, data)
 
-	async def emotes(self):
-		try:
-			return await self.request(Route('GET', '/emotes'))
-		except NotFound:
-			return []
+	def emotes(self, author_id=None):
+		if author_id is not None:
+			return self.request(Route('GET', '/emotes/{author}', author=author_id))
+		return self.request(Route('GET', '/emotes'))
 
 	def emote(self, name):
 		return self.request(Route('GET', '/emote/{name}', name=name))
@@ -99,7 +98,7 @@ class HttpClient:
 		return self.request(Route('GET', '/login'))
 
 	async def create(self, *, name, url=None, image: bytes = None):
-		if not url and not image or url and image:
+		if bool(url) == bool(image):
 			raise InvalidArgument('exactly one of url or image is required')
 
 		if url:
@@ -130,15 +129,10 @@ class HttpClient:
 	def delete(self, name):
 		return self.request(Route('DELETE', '/emote/{name}', name=name))
 
-	async def search(self, query):
-		try:
-			return await self.request(Route('GET', '/search/{query}', query=query))
-		except NotFound:
-			return []
+	def search(self, query):
+		return self.request(Route('GET', '/search/{query}', query=query))
 
-	async def popular(self):
-		try:
-			return await self.request(Route('GET', '/popular'))
-		except NotFound:
-			return []
-
+	def popular(self, author_id=None):
+		if author_id is not None:
+			return self.request(Route('GET', '/popular/{author}', author=author_id))
+		return self.request(Route('GET', '/popular'))

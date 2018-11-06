@@ -11,6 +11,7 @@ class BaseEmote:
 		'_preserve',
 		'_description',
 		'_usage',
+		'_nsfw',
 	))
 
 	def __new__(cls, *, data):
@@ -50,6 +51,10 @@ class BaseEmote:
 	@property
 	def _a(self):
 		return 'a' if self.animated else ''
+
+	@property
+	def is_nsfw(self):
+		return self.nsfw != 'SFW'
 
 	@property
 	def as_reaction(self):

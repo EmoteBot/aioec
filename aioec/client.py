@@ -21,8 +21,8 @@ class Client:
 	async def search(self, query):
 		return list(map(self._new_emote, await self._http.search(query)))
 
-	async def popular(self):
-		return list(map(self._new_emote, await self._http.popular()))
+	async def popular(self, author_id=None):
+		return list(map(self._new_emote, await self._http.popular(author_id)))
 
 	async def login(self):
 		"""Checks that your token is correct.

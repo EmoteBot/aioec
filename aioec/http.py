@@ -80,10 +80,11 @@ class HttpClient:
 				return data
 			raise self._response_errors.get(response.status, HttpException)(response, data)
 
-	def emotes(self, author_id=None):
+	def emotes(self, author_id=None, *, allow_nsfw=True):
+		params = dict(allow_nsfw=_marshal_bool(allow_nsfw))
 		if author_id is not None:
-			return self.request(Route('GET', '/emotes/{author}', author=author_id))
-		return self.request(Route('GET', '/emotes'))
+			return self.request(Route('GET', '/emotes/{author}', author=author_id), params=params)
+		return self.request(Route('GET', '/emotes'), params=params)
 
 	def emote(self, name):
 		return self.request(Route('GET', '/emote/{name}', name=name))
@@ -123,10 +124,14 @@ class HttpClient:
 	def delete(self, name):
 		return self.request(Route('DELETE', '/emote/{name}', name=name))
 
-	def search(self, query):
-		return self.request(Route('GET', '/search/{query}', query=query))
+	def search(self, query, *, allow_nsfw=True):
+		params = dict(allow_nsfw=_marshal_bool(allow_nsfw))
+		return self.request(Route('GET', '/search/{query}', query=query), params=params)
 
-	def popular(self, author_id=None):
+	def popular(self, author_id=None, *, allow_nsfw=True):
+		params = dict(allow_nsfw=_marshal_bool(allow_nsfw))
 		if author_id is not None:
-			return self.request(Route('GET', '/popular/{author}', author=author_id))
-		return self.request(Route('GET', '/popular'))
+			return self.request(Route('GET', '/popular/{author}', author=author_id), params=params)
+		return self.request(Route('GET', '/popular'), params=params)
+
+_marshal_bool = lambda x: 'true' if x else 'false'

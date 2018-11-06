@@ -15,14 +15,14 @@ class Client:
 	async def emote(self, name):
 		return self._new_emote(await self._http.emote(name))
 
-	async def emotes(self, author_id=None):
-		return list(map(self._new_emote, await self._http.emotes(author_id)))
+	async def emotes(self, author_id=None, *, allow_nsfw=True):
+		return list(map(self._new_emote, await self._http.emotes(author_id, allow_nsfw=allow_nsfw)))
 
-	async def search(self, query):
-		return list(map(self._new_emote, await self._http.search(query)))
+	async def search(self, query, *, allow_nsfw=True):
+		return list(map(self._new_emote, await self._http.search(query, allow_nsfw=allow_nsfw)))
 
-	async def popular(self, author_id=None):
-		return list(map(self._new_emote, await self._http.popular(author_id)))
+	async def popular(self, author_id=None, allow_nsfw=True):
+		return list(map(self._new_emote, await self._http.popular(author_id, allow_nsfw=allow_nsfw)))
 
 	async def login(self):
 		"""Checks that your token is correct.

@@ -1,19 +1,6 @@
 from . import utils
 
 class BaseEmote:
-	__slots__ = frozenset((
-		'_name',
-		'_id',
-		'_author',
-		'_animated',
-		'_created',
-		'_modified',
-		'_preserve',
-		'_description',
-		'_usage',
-		'_nsfw',
-	))
-
 	def __new__(cls, *, data):
 		self = super().__new__(cls)
 
@@ -28,7 +15,20 @@ class BaseEmote:
 
 		return self
 
-	for field in __slots__:
+	_fields = (
+		'_name',
+		'_id',
+		'_author',
+		'_animated',
+		'_created',
+		'_modified',
+		'_preserve',
+		'_description',
+		'_usage',
+		'_nsfw',
+	)
+
+	for field in _fields:
 		def getter(self, field=field):
 			return getattr(self, field)
 

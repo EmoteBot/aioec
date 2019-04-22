@@ -18,7 +18,7 @@ setuptools.setup(
 	version=version,
 	license='MIT',
 	packages=['aioec'],
-	install_requires=['aiohttp>=3.3.0,<3.4.0'],
+	install_requires=['aiohttp>=3.3.0,<3.6.0'],
 	description='async client library for the Emote Collector API',
 	long_description=readme,
 	classifiers=[

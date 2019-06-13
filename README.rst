@@ -29,7 +29,7 @@ Usage
 	for gamewisp_emote in await client.search('GW'):
 		await gamewisp_emote.delete()
 
-	all_emotes = await client.emotes()
+	all_emotes = [emote async for emote in client.emotes()]
 	popular_emotes = await client.popular()
 
 	await client.close()

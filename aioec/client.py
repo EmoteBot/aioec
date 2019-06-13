@@ -15,8 +15,21 @@ class Client:
 	async def emote(self, name):
 		return self._new_emote(await self._http.emote(name))
 
-	async def emotes(self, author_id=None, *, allow_nsfw=True):
-		return list(map(self._new_emote, await self._http.emotes(author_id, allow_nsfw=allow_nsfw)))
+	async def emotes(self, author_id=None, *, allow_nsfw=True, after=None):
+		if after is None:
+			async for emote in self._all_emotes(author_id, allow_nsfw=allow_nsfw):
+				yield emote
+			return
+
+		for emote in map(self._new_emote, await self._http.emotes(author_id, allow_nsfw=allow_nsfw, after=after)):
+			yield emote
+
+	async def _all_emotes(self, author_id=None, *, allow_nsfw=True):
+		batch = await self._http.emotes(author_id, allow_nsfw=allow_nsfw)
+		while batch:
+			for obj in batch:
+				yield self._new_emote(obj)
+			batch = await self._http.emotes(author_id, allow_nsfw=allow_nsfw, after=batch[-1]['name'])
 
 	async def search(self, query, *, allow_nsfw=True):
 		return list(map(self._new_emote, await self._http.search(query, allow_nsfw=allow_nsfw)))

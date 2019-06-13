@@ -40,7 +40,7 @@ class Route:
 	def __init__(self, method, path, **parameters):
 		self.path = path
 		self.method = method
-		url = (self.BASE + self.path)
+		url = self.BASE + self.path
 		if parameters:
 			self.url = url.format(**{k: uriquote(v) if isinstance(v, str) else v for k, v in parameters.items()})
 		else:
@@ -80,8 +80,11 @@ class HttpClient:
 				return data
 			raise self._response_errors.get(response.status, HttpException)(response, data)
 
-	def emotes(self, author_id=None, *, allow_nsfw=True):
+	def emotes(self, author_id=None, *, allow_nsfw=True, after=None):
 		params = dict(allow_nsfw=_marshal_bool(allow_nsfw))
+		if after is not None:
+			params['after'] = after
+
 		if author_id is not None:
 			return self.request(Route('GET', '/emotes/{author}', author=author_id), params=params)
 		return self.request(Route('GET', '/emotes'), params=params)

@@ -80,8 +80,10 @@ class HttpClient:
 				return data
 			raise self._response_errors.get(response.status, HttpException)(response, data)
 
-	def emotes(self, author_id=None, *, allow_nsfw=True, after=None):
+	def emotes(self, author_id=None, *, allow_nsfw=True, before=None, after=None):
 		params = dict(allow_nsfw=_marshal_bool(allow_nsfw))
+		if before is not None:
+			params['before'] = before
 		if after is not None:
 			params['after'] = after
 

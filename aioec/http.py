@@ -35,8 +35,6 @@ async def json_or_text(response):
 	return text
 
 class Route:
-	BASE = 'https://emote-collector.python-for.life/api/v0'
-
 	def __init__(self, method, path, **parameters):
 		self.path = path
 		self.method = method
@@ -46,8 +44,18 @@ class Route:
 		else:
 			self.url = url
 
+	@classmethod
+	def using(cls, *, base_url=None):
+		"""dynamically construct a subclass of Route which has the specified base URL"""
+		if base_url is None:
+			base_url = 'https://ec.emote.bot/api/v0'
+		cls = type('Route', (cls,), {})
+		cls.BASE = base_url
+		return cls
+
 class HttpClient:
-	def __init__(self, token=None, *, loop=None):
+	def __init__(self, token=None, *, loop=None, base_url=None):
+		self.route_cls = Route.using(base_url=base_url)
 		self.token = token
 		self.loop = loop or asyncio.get_event_loop()
 		user_agent = 'aioec (https://github.com/EmoteCollector/aioec) {0} aiohttp/{1} Python/{2[0]}.{2[1]}'
@@ -88,24 +96,24 @@ class HttpClient:
 			params['after'] = after
 
 		if author_id is not None:
-			return self.request(Route('GET', '/emotes/{author}', author=author_id), params=params)
-		return self.request(Route('GET', '/emotes'), params=params)
+			return self.request(self.route_cls('GET', '/emotes/{author}', author=author_id), params=params)
+		return self.request(self.route_cls('GET', '/emotes'), params=params)
 
 	def emote(self, name):
-		return self.request(Route('GET', '/emote/{name}', name=name))
+		return self.request(self.route_cls('GET', '/emote/{name}', name=name))
 
 	def login(self):
-		return self.request(Route('GET', '/login'))
+		return self.request(self.route_cls('GET', '/login'))
 
 	async def create(self, *, name, url=None, image: bytes = None):
 		if bool(url) == bool(image):
 			raise InvalidArgument('exactly one of url or image is required')
 
 		if url:
-			return await self.request(Route('PUT', '/emote/{name}/{url}', name=name, url=url))
+			return await self.request(self.route_cls('PUT', '/emote/{name}/{url}', name=name, url=url))
 
 		if image:
-			return await self.request(Route('PUT', '/emote/{name}', name=name), data=image)
+			return await self.request(self.route_cls('PUT', '/emote/{name}', name=name), data=image)
 
 	async def edit(self, name_, *, name=None, description=sentinel):
 		data = {}
@@ -120,23 +128,23 @@ class HttpClient:
 			data['description'] = description
 
 		try:
-			return await self.request(Route('PATCH', '/emote/{name}', name=name), json=data)
+			return await self.request(self.route_cls('PATCH', '/emote/{name}', name=name), json=data)
 		except RequestEntityTooLarge as exception:
 			raise EmoteDescriptionTooLongError(
 				max_length=exception.max_size,
 				actual_length=exception.actual_size) from None
 
 	def delete(self, name):
-		return self.request(Route('DELETE', '/emote/{name}', name=name))
+		return self.request(self.route_cls('DELETE', '/emote/{name}', name=name))
 
 	def search(self, query, *, allow_nsfw=True):
 		params = dict(allow_nsfw=_marshal_bool(allow_nsfw))
-		return self.request(Route('GET', '/search/{query}', query=query), params=params)
+		return self.request(self.route_cls('GET', '/search/{query}', query=query), params=params)
 
 	def popular(self, author_id=None, *, allow_nsfw=True):
 		params = dict(allow_nsfw=_marshal_bool(allow_nsfw))
 		if author_id is not None:
-			return self.request(Route('GET', '/popular/{author}', author=author_id), params=params)
-		return self.request(Route('GET', '/popular'), params=params)
+			return self.request(self.route_cls('GET', '/popular/{author}', author=author_id), params=params)
+		return self.request(self.route_cls('GET', '/popular'), params=params)
 
 _marshal_bool = lambda x: 'true' if x else 'false'

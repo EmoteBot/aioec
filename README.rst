@@ -11,8 +11,9 @@ Usage
 
 	import aioec
 
-	client = aioec.Client(token='your token here')
-	# if no token is provided, only anonymous endpoints will be available
+	anonymous_client = aioec.Client()
+	authenticated_client = aioec.Client(token='your token here')
+	local_client = aioec.Client(base_url='http://ec.localhost:2018/api/v0')  # no trailing slash!
 
 	# this step isn't necessary but makes sure that your token is correct
 	my_user_id = await client.login()

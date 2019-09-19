@@ -54,7 +54,7 @@ class Route:
 		return cls
 
 class HttpClient:
-	def __init__(self, token=None, *, loop=None, base_url=None):
+	def __init__(self, token=None, *, loop=None, base_url=None, connector=None):
 		self.route_cls = Route.using(base_url=base_url)
 		self.token = token
 		self.loop = loop or asyncio.get_event_loop()
@@ -65,7 +65,7 @@ class HttpClient:
 		if self.token is not None:
 			headers['Authorization'] = self.token
 
-		self._session = aiohttp.ClientSession(headers=headers, loop=self.loop)
+		self._session = aiohttp.ClientSession(headers=headers, loop=self.loop, connector=connector)
 
 	def close(self):
 		return self._session.close()

@@ -40,9 +40,25 @@ Usage
 		await client.delete('Think_')
 	# this will automatically close the client
 
+With the Tor hidden services
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You'll need to install `aiohttp_socks <https://github.com/romis2012/aiohttp-socks>`_ first.
+
+.. code-block:: python3
+
+	from aiohttp_socks import SocksConnector
+	import aioec
+
+	connector = SocksConnector(port=9050, rdns=True)  # without rdns, the connector will fail to resolve onions
+	client = aioec.Client(
+		connector=connector,
+		base_url='http://emotesdikhisgxdcmh7wtlvzfw2yxp4vmkyy6mu5wixzgqfmxvuotryd.onion/api/v0',
+	)
+
 License
 -------
 
 MIT/X11
 
-Copyright © 2018 Benjamin Mintz <bmintz@protonmail.com>
+Copyright © 2018–2019 Io Mintz <io@mintz.cc>

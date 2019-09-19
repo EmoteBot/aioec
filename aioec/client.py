@@ -3,8 +3,8 @@ from .emote import Emote
 from . import utils
 
 class Client:
-	def __init__(self, token=None, *, loop=None, base_url=None):
-		self._http = HttpClient(token=token, loop=loop, base_url=base_url)
+	def __init__(self, token=None, *, loop=None, base_url=None, connector=None):
+		self._http = HttpClient(token=token, loop=loop, base_url=base_url, connector=connector)
 
 	def _new_emote(self, data):
 		return Emote(data=data, http=self._http)

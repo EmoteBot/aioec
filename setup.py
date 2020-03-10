@@ -12,13 +12,14 @@ with open('README.rst') as f:
 
 setuptools.setup(
 	name='aioec',
-	author='Benjamin Mintz',
-	author_email='bmintz@protonmail.com',
+	author='io mintz',
+	author_email='io@mintz.cc',
 	url='https://github.com/EmoteCollector/aioec',
 	version=version,
 	license='MIT',
 	packages=['aioec'],
-	install_requires=['aiohttp>=3.3.0,<3.6.0'],
+	install_requires=['aiohttp<3.7.0,>=3.6.0'],
+	python_requires='>=3.5.3',
 	description='async client library for the Emote Collector API',
 	long_description=readme,
 	classifiers=[
